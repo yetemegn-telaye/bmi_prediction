@@ -3,7 +3,7 @@
 
 # # Importing all the dependencies
 
-# In[3]:
+# In[1]:
 
 
 import pandas as pd
@@ -22,11 +22,11 @@ import streamlit as st
 
 # # Import the dataset
 
-# In[44]:
+# In[3]:
 
 
 df = pd.read_csv('gym_members_exercise_tracking.csv')
-data = df.head()
+df.size
 
 
 # In[43]:
@@ -51,10 +51,10 @@ data = df.describe().T
 data = df.describe(include="object")
 
 
-# In[38]:
+# In[12]:
 
 
-data = df.info()
+df.info()
 
 
 # In[85]:
@@ -127,16 +127,16 @@ for i in ['Age', 'Weight (kg)', 'Height (m)', 'Max_BPM', 'Avg_BPM', 'Resting_BPM
     plt.show()
 
 
-# In[99]:
+# In[5]:
 
 
 df_corr = df.select_dtypes(include="number").corr()
 
 
-# In[105]:
+# In[9]:
 
 
-plt.figure(figsize=(15,15))
+plt.figure(figsize=(10,10))
 sns.heatmap(df_corr,annot=True)
 
 
@@ -196,35 +196,104 @@ for i in df.select_dtypes(include="number").columns:
     plt.show()
 
 
-# # Feature Engineering
-
-# - Encode categorical variable
-
-# In[5]:
-
-
-data = df.select_dtypes(include="object").columns
-
-
 # In[6]:
 
 
-encoded_df = pd.get_dummies(df, columns=['Gender'], drop_first=False)
+q1 = df['Calories_Burned'].quantile(0.25)
+q3 = df['Calories_Burned'].quantile(0.75)
+iqr = q3-q1
 
 
 # In[7]:
 
 
-new_encoded_df = pd.get_dummies(encoded_df, columns=['Workout_Type'], drop_first=False)
-data=new_encoded_df.head()
+q1,q3,iqr
 
-
-# - Scale or normalize numerical features
 
 # In[8]:
 
 
-data = new_encoded_df
+upper_limit = q3 + (1.5*iqr)
+lower_limit = q1 - (1.5 * iqr)
+lower_limit, upper_limit
+
+
+# In[9]:
+
+
+sns.boxplot(df['Calories_Burned'])
+
+
+# In[10]:
+
+
+df.loc[(df['Calories_Burned'] > upper_limit) | (df['Calories_Burned'] < lower_limit)]
+
+
+# In[11]:
+
+
+new_df = df.loc[(df['Calories_Burned'] < upper_limit) & (df['Calories_Burned'] > lower_limit)]
+print('Before removing outliers:', len(df))
+print('After removing outliers:', len(new_df))
+print('outliers:', len(df)-len(new_df))
+
+
+# In[12]:
+
+
+sns.boxplot(new_df['Calories_Burned'])
+
+
+# In[13]:
+
+
+new_df = df.copy()
+new_df.loc[(new_df['Calories_Burned']>upper_limit), 'Calories_Burned'] = upper_limit
+new_df.loc[(new_df['Calories_Burned']<lower_limit), 'Calories_Burned'] = lower_limit
+
+
+# In[14]:
+
+
+sns.boxplot(new_df['Calories_Burned'])
+
+
+# In[18]:
+
+
+df=new_df
+
+
+# # Feature Engineering
+
+# - Encode categorical variable
+
+# In[28]:
+
+
+df.select_dtypes(include="object").columns
+
+
+# In[29]:
+
+
+encoded_df = pd.get_dummies(df, columns=['Gender'], drop_first=False)
+
+
+# In[30]:
+
+
+new_encoded_df = pd.get_dummies(encoded_df, columns=['Workout_Type'], drop_first=False)
+new_encoded_df.head()
+
+
+# - Scale or normalize numerical features
+
+# In[31]:
+
+
+new_encoded_df
 
 
 # In[23]:
@@ -233,7 +302,7 @@ data = new_encoded_df
 data = df.columns
 
 
-# In[24]:
+# In[33]:
 
 
 df=new_encoded_df
@@ -246,12 +315,12 @@ numericals = ['Age', 'Weight (kg)', 'Height (m)', 'Max_BPM', 'Avg_BPM', 'Resting
 scaler = MinMaxScaler()
 df[numericals] = scaler.fit_transform(df[numericals])
 joblib.dump(scaler, 'scaler.pkl')
-data = df
+df
 
 
 # # Data Splitting
 
-# In[25]:
+# In[34]:
 
 
 x= df.drop('BMI',axis=1)
@@ -263,14 +332,14 @@ print(f"Train size: {X_train.shape[0]}, Validation size: {X_val.shape[0]}, Test 
 
 # # Model Development and Training
 
-# In[26]:
+# In[23]:
 
 
 #select a model and initialize
 model = LinearRegression()
 
 
-# In[27]:
+# In[35]:
 
 
 #train the model on training set
@@ -279,7 +348,7 @@ model.fit(X_train,y_train)
 
 # # Model Evaluation and hyperparameter tunning
 
-# In[28]:
+# In[36]:
 
 
 #validate the model on validation set
@@ -295,7 +364,7 @@ print(f"Validation on r2 score: {var_r2_score:.2f}")
 
 # - check for overfitting and underfitting
 
-# In[29]:
+# In[37]:
 
 
 # Predict on the training set
@@ -319,7 +388,7 @@ print(f"Train r2 score: {train_r2:.2f}")
 
 # # Model testing and deployment
 
-# In[30]:
+# In[38]:
 
 
 y_test_pred = model.predict(X_test)
@@ -334,7 +403,7 @@ print(f"Test mean squared error: {test_mse:.2f}")
 print(f"Test r2 score: {test_r2:.2f}")
 
 
-# In[21]:
+# In[39]:
 
 
 joblib.dump(model, 'bmi_predicting_model.pkl')
@@ -347,7 +416,7 @@ print("Model saved as 'bmi_predicting_model.pkl'")
 df.columns
 
 
-# In[35]:
+# In[40]:
 
 
 warnings.filterwarnings('ignore',category=FutureWarning)
