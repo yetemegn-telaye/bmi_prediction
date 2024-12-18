@@ -415,34 +415,38 @@ print("Model saved as 'bmi_predicting_model.pkl'")
 cols = df.columns
 
 
-# In[40]:
+# In[41]:
 
 
 warnings.filterwarnings('ignore',category=FutureWarning)
 model = joblib.load('bmi_predicting_model.pkl')
+
 st.title('BMI Prediction App')
 st.header('Enter Features for BMI Prediction')
-age = st.number_input('Age',value=0.0)
-weight = st.number_input('Weight(Kg)',value=0.0)
-height = st.number_input('Height(cm)',value=0.0)
-Max_BPM = st.number_input('Maximum BPM',value=0.0)
-Avg_BPM = st.number_input('Avg BPM',value=0.0)
-Resting_BPM = st.number_input('Resting BPM',value=0.0)
-Session_Duration = st.number_input('Workout Session duration',value=0.0)
-Calories_Burned = st.number_input('Calories Burned',value=0.0)
-Fat_Percentage = st.number_input('Fat Percentage',value=0.0)
-Water_Intake = st.number_input('Water intake(liters)',value=0.0)
-Workout_Frequency = st.number_input('Workout Frequency(days/week)',value=0.0)
-Experience_Level = st.number_input('Experience Level',value=0.0)
 
-gender = st.selectbox('Gender',['Female','Male'])
+# Dropdowns for Age, Weight, Height, and other features
+age = st.selectbox('Age', options=range(10, 81, 5))  # Age from 10 to 80 in steps of 5
+weight = st.selectbox('Weight (Kg)', options=range(30, 151, 5))  # Weight from 30 to 150 in steps of 5
+height = st.selectbox('Height (cm)', options=range(120, 221, 5))  # Height from 120 to 220 in steps of 5
+Max_BPM = st.selectbox('Maximum BPM', options=range(100, 201, 10))  # Max BPM from 100 to 200 in steps of 10
+Avg_BPM = st.selectbox('Average BPM', options=range(60, 151, 10))  # Avg BPM from 60 to 150 in steps of 10
+Resting_BPM = st.selectbox('Resting BPM', options=range(40, 101, 10))  # Resting BPM from 40 to 100 in steps of 10
+Session_Duration = st.selectbox('Workout Session Duration (hours)', options=[0.5, 1, 1.5, 2, 2.5, 3])  # Duration options
+Calories_Burned = st.selectbox('Calories Burned', options=range(100, 1001, 50))  # Calories from 100 to 1000 in steps of 50
+Fat_Percentage = st.selectbox('Fat Percentage', options=range(5, 51, 5))  # Fat percentage from 5 to 50 in steps of 5
+Water_Intake = st.selectbox('Water Intake (liters)', options=[0.5, 1, 1.5, 2, 2.5, 3])  # Water intake options
+Workout_Frequency = st.selectbox('Workout Frequency (days/week)', options=range(1, 8))  # Days per week from 1 to 7
+Experience_Level = st.selectbox('Experience Level', options=range(1, 6))  # Levels from 1 (Beginner) to 5 (Expert)
+
+# Dropdowns for Gender and Workout Type
+gender = st.selectbox('Gender', ['Female', 'Male'])
 gender_encoded = {
-    'Gender_Female': 0 ,
+    'Gender_Female': 0,
     'Gender_Male': 0
 }
 gender_encoded[f'Gender_{gender}'] = 1
 
-workout_type = st.selectbox('Workout Type',['Cardio','HIIT','Strength','Yoga'])
+workout_type = st.selectbox('Workout Type', ['Cardio', 'HIIT', 'Strength', 'Yoga'])
 workout_encoded = {
     'Workout_Type_Cardio': 0,
     'Workout_Type_HIIT': 0,
@@ -451,30 +455,33 @@ workout_encoded = {
 }
 workout_encoded[f'Workout_Type_{workout_type}'] = 1
 
+# Predict BMI
 if st.button('Predict BMI'):
     input_data = pd.DataFrame({
-        'Age':[age],
-        'Weight (kg)':[weight],
-        'Height (m)':[height],
-        'Max_BPM':[Max_BPM],
+        'Age': [age],
+        'Weight (kg)': [weight],
+        'Height (m)': [height / 100],  # Convert height to meters
+        'Max_BPM': [Max_BPM],
         'Avg_BPM': [Avg_BPM],
         'Resting_BPM': [Resting_BPM],
         'Session_Duration (hours)': [Session_Duration],
         'Calories_Burned': [Calories_Burned],
         'Fat_Percentage': [Fat_Percentage],
         'Water_Intake (liters)': [Water_Intake],
-        'Workout_Frequency (days/week)':[ Workout_Frequency],
+        'Workout_Frequency (days/week)': [Workout_Frequency],
         'Experience_Level': [Experience_Level],
         **gender_encoded,
         **workout_encoded
     })
+    
+    # Scale the input data (assuming a preloaded scaler)
     input_data_scaled = scaler.fit_transform(input_data)
+    
+    # Make prediction
     prediction = model.predict(input_data_scaled)
-    if isinstance(prediction, (list, np.ndarray)):
-        prediction_value = prediction[0] 
-    else:
-        prediction_value = prediction 
-    prediction = max(prediction_value, 0) 
+    prediction_value = prediction[0] if isinstance(prediction, (list, np.ndarray)) else prediction
+    prediction_value = max(prediction_value, 0)  # Ensure non-negative BMI
+    
     st.success(f'Predicted BMI: {prediction_value:.2f}')
 
 
