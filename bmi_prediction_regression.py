@@ -415,7 +415,7 @@ print("Model saved as 'bmi_predicting_model.pkl'")
 cols = df.columns
 
 
-# In[41]:
+# In[42]:
 
 
 warnings.filterwarnings('ignore',category=FutureWarning)
@@ -424,28 +424,39 @@ model = joblib.load('bmi_predicting_model.pkl')
 st.title('BMI Prediction App')
 st.header('Enter Features for BMI Prediction')
 
-# Dropdowns for Age, Weight, Height, and other features
-age = st.selectbox('Age', options=range(10, 81, 5))  # Age from 10 to 80 in steps of 5
-weight = st.selectbox('Weight (Kg)', options=range(30, 151, 5))  # Weight from 30 to 150 in steps of 5
-height = st.selectbox('Height (cm)', options=range(120, 221, 5))  # Height from 120 to 220 in steps of 5
-Max_BPM = st.selectbox('Maximum BPM', options=range(100, 201, 10))  # Max BPM from 100 to 200 in steps of 10
-Avg_BPM = st.selectbox('Average BPM', options=range(60, 151, 10))  # Avg BPM from 60 to 150 in steps of 10
-Resting_BPM = st.selectbox('Resting BPM', options=range(40, 101, 10))  # Resting BPM from 40 to 100 in steps of 10
-Session_Duration = st.selectbox('Workout Session Duration (hours)', options=[0.5, 1, 1.5, 2, 2.5, 3])  # Duration options
-Calories_Burned = st.selectbox('Calories Burned', options=range(100, 1001, 50))  # Calories from 100 to 1000 in steps of 50
-Fat_Percentage = st.selectbox('Fat Percentage', options=range(5, 51, 5))  # Fat percentage from 5 to 50 in steps of 5
-Water_Intake = st.selectbox('Water Intake (liters)', options=[0.5, 1, 1.5, 2, 2.5, 3])  # Water intake options
-Workout_Frequency = st.selectbox('Workout Frequency (days/week)', options=range(1, 8))  # Days per week from 1 to 7
-Experience_Level = st.selectbox('Experience Level', options=range(1, 6))  # Levels from 1 (Beginner) to 5 (Expert)
+# Create columns
+col1, col2, col3 = st.columns(3)
 
-# Dropdowns for Gender and Workout Type
-gender = st.selectbox('Gender', ['Female', 'Male'])
+# Column 1 Inputs
+with col1:
+    age = st.selectbox('Age', options=range(10, 81, 5)) 
+    weight = st.selectbox('Weight (Kg)', options=range(30, 151, 5)) 
+    height = st.selectbox('Height (cm)', options=range(120, 221, 5)) 
+    gender = st.selectbox('Gender', ['Female', 'Male'])
+
+# Column 2 Inputs
+with col2:
+    Max_BPM = st.selectbox('Maximum BPM', options=range(100, 201, 10))  
+    Avg_BPM = st.selectbox('Average BPM', options=range(60, 151, 10))  
+    Resting_BPM = st.selectbox('Resting BPM', options=range(40, 101, 10))  
+    Workout_Frequency = st.selectbox('Workout Frequency (days/week)', options=range(1, 8))  
+
+# Column 3 Inputs
+with col3:
+    Session_Duration = st.selectbox('Workout Session Duration (hours)', options=[0.5, 1, 1.5, 2, 2.5, 3])  
+    Calories_Burned = st.selectbox('Calories Burned', options=range(100, 1001, 50))  
+    Fat_Percentage = st.selectbox('Fat Percentage', options=range(5, 51, 5))  
+    Water_Intake = st.selectbox('Water Intake (liters)', options=[0.5, 1, 1.5, 2, 2.5, 3])  
+    Experience_Level = st.selectbox('Experience Level', options=range(1, 6))  
+
+# Encode Gender
 gender_encoded = {
     'Gender_Female': 0,
     'Gender_Male': 0
 }
 gender_encoded[f'Gender_{gender}'] = 1
 
+# Workout Type Dropdown
 workout_type = st.selectbox('Workout Type', ['Cardio', 'HIIT', 'Strength', 'Yoga'])
 workout_encoded = {
     'Workout_Type_Cardio': 0,
