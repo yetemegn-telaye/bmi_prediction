@@ -422,32 +422,6 @@ warnings.filterwarnings('ignore',category=FutureWarning)
 model = joblib.load('bmi_predicting_model.pkl')
 
 
-st.markdown(
-    """
-    <style>
-    body {
-        background-image: url(https://static.vecteezy.com/system/resources/thumbnails/041/388/946/small/ai-generated-gym-weights-on-textured-background-fitness-concept-photo.jpg");
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        position: relative;
-    }
-    body::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: -1; 
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
 st.title('BMI Prediction App')
 st.header('Enter Features for BMI Prediction')
 
