@@ -272,7 +272,7 @@ df=new_df
 # In[28]:
 
 
-df.select_dtypes(include="object").columns
+categorical_cols = df.select_dtypes(include="object").columns
 
 
 # In[29]:
