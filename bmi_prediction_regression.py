@@ -42,13 +42,13 @@ data = df.tail()
 # In[48]:
 
 
-data = df.describe().T
+data_numeric = df.describe().T
 
 
 # In[47]:
 
 
-data = df.describe(include="object")
+data_categorical = df.describe(include="object")
 
 
 # In[12]:
@@ -412,7 +412,7 @@ print("Model saved as 'bmi_predicting_model.pkl'")
 # In[22]:
 
 
-df.columns
+cols = df.columns
 
 
 # In[40]:
