@@ -26,7 +26,7 @@ import streamlit as st
 
 
 df = pd.read_csv('gym_members_exercise_tracking.csv')
-df.size
+data_size = df.size
 
 
 # In[43]:
@@ -54,7 +54,7 @@ data = df.describe(include="object")
 # In[12]:
 
 
-df.info()
+data = df.info()
 
 
 # In[85]:
@@ -113,7 +113,7 @@ for i in df.select_dtypes(include="number").columns:
 # In[96]:
 
 
-df.select_dtypes(include="number").columns
+data = df.select_dtypes(include="number").columns
 
 
 # In[97]:
@@ -207,7 +207,7 @@ iqr = q3-q1
 # In[7]:
 
 
-q1,q3,iqr
+showing = q1,q3,iqr
 
 
 # In[8]:
@@ -215,7 +215,7 @@ q1,q3,iqr
 
 upper_limit = q3 + (1.5*iqr)
 lower_limit = q1 - (1.5 * iqr)
-lower_limit, upper_limit
+limits = lower_limit, upper_limit
 
 
 # In[9]:
@@ -227,7 +227,7 @@ sns.boxplot(df['Calories_Burned'])
 # In[10]:
 
 
-df.loc[(df['Calories_Burned'] > upper_limit) | (df['Calories_Burned'] < lower_limit)]
+outlier_values = df.loc[(df['Calories_Burned'] > upper_limit) | (df['Calories_Burned'] < lower_limit)]
 
 
 # In[11]:
@@ -285,7 +285,7 @@ encoded_df = pd.get_dummies(df, columns=['Gender'], drop_first=False)
 
 
 new_encoded_df = pd.get_dummies(encoded_df, columns=['Workout_Type'], drop_first=False)
-new_encoded_df.head()
+encoded_data = new_encoded_df.head()
 
 
 # - Scale or normalize numerical features
@@ -293,7 +293,7 @@ new_encoded_df.head()
 # In[31]:
 
 
-new_encoded_df
+data = new_encoded_df
 
 
 # In[23]:
@@ -315,7 +315,6 @@ numericals = ['Age', 'Weight (kg)', 'Height (m)', 'Max_BPM', 'Avg_BPM', 'Resting
 scaler = MinMaxScaler()
 df[numericals] = scaler.fit_transform(df[numericals])
 joblib.dump(scaler, 'scaler.pkl')
-df
 
 
 # # Data Splitting
